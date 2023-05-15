@@ -15,22 +15,22 @@ data = {
 }
 is_first = True
 for message_id,message in messages.items():
-    print(message["message"])
+    print(".".join([message["source"],message["message"]]))
     if is_first:
         is_first = False
-        sign = calculate.sha512(".".join([message_id, c.getkey("client_id"), "pvm", message["message"]]))
+        sign = calculate.sha512(".".join([message_id, c.getkey("client_id"), message["source"], message["message"]]))
         once_data = {
             "message_id":message_id,
-            "application":"pvm",
+            "source":message["source"],
             "sign":sign
         }
         ret = handler.post_request("/v0/east/updatestatus",once_data)
         print(ret)
         continue
-    sign = calculate.sha512(".".join([message_id, c.getkey("client_id"), "pvm", message["message"]]))
+    sign = calculate.sha512(".".join([message_id, c.getkey("client_id"), message["source"], message["message"]]))
     data["messages"].append({
         "message_id":message_id,
-        "application":"pvm",
+        "source":message["source"],
         "sign":sign
     })
 ret = handler.post_request("/v0/east/updatemultistatus",data)
